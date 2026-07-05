@@ -1,13 +1,11 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/xelioodev/aethi/main/docs/assets/aethi-logo-mark-128.png" alt="aethi logo" width="88" />
+  <img src="docs/assets/aethi-banner.svg" alt="Aethi protocol banner" width="100%" />
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/xelioodev/aethi/main/docs/assets/aethi-wordmark.svg" alt="aethi wordmark" width="520" />
-</p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/xelioodev/aethi/main/docs/assets/aethi-banner.svg" alt="aethi protocol banner" width="100%" />
+  <a href="#"><img alt="Solidity" src="https://img.shields.io/badge/Solidity-0.8.35-363636?style=for-the-badge&logo=solidity" /></a>
+  <a href="#"><img alt="OpenZeppelin" src="https://img.shields.io/badge/OpenZeppelin-v5.6.1-4e5ee4?style=for-the-badge" /></a>
+  <a href="#"><img alt="License" src="https://img.shields.io/badge/License-MIT-244e5d?style=for-the-badge" /></a>
 </p>
 
 # aethi
