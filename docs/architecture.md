@@ -1,10 +1,10 @@
-# Aethi Architecture
+# AET Architecture
 
-Aethi separates the game economy into small contracts with clear ownership boundaries: token supply, item issuance, staking, season state, and direct reward operations.
+AET separates the game economy into small contracts with clear ownership boundaries: token supply, item issuance, staking, season state, and direct reward operations.
 
 ## Core Model
 
-Players stake AETHI before entering a season. When a player joins, the game snapshots their current stake and the season's economic settings. That snapshot is used for the whole season, so later admin configuration changes do not alter active season rules.
+Players stake AET before entering a season. When a player joins, the game snapshots their current stake and the season's economic settings. That snapshot is used for the whole season, so later admin configuration changes do not alter active season rules.
 
 Each round has a small battle loop:
 
@@ -33,15 +33,15 @@ base match score
 
 ## Contracts
 
-### AethiToken
+### AETToken
 
 Capped ERC20 used for staking, entry fees, rewards, and operational distributions. Minting and pausing are role-gated.
 
-### AethiItems
+### AETItems
 
 ERC721 item collection. Item mints require EIP-712 authorization from an item signer. Each authorization binds the player, item type, item class, action affinity, boost value, charges, metadata hash, nonce, and deadline.
 
-### AethiStaking
+### AETStaking
 
 Single-token staking vault with reward-per-share accounting. It supports:
 
@@ -53,7 +53,7 @@ Single-token staking vault with reward-per-share accounting. It supports:
 
 The cooldown makes stake commitments meaningful for season access while keeping withdrawals deterministic.
 
-### AethiGame
+### AETGame
 
 Season coordinator. It handles:
 
@@ -71,27 +71,27 @@ Season coordinator. It handles:
 - finalization and pro-rata reward claims
 - dust sweep after claim window
 
-### AethiRewardDistributor
+### AETRewardDistributor
 
 Controlled vault for direct rewards outside season pools.
 
 ## State Flow
 
 ```text
-AethiToken
-  -> staked in AethiStaking
-  -> paid as AethiGame entry fees
+AETToken
+  -> staked in AETStaking
+  -> paid as AETGame entry fees
   -> escrowed as season reward pools
-  -> distributed by AethiRewardDistributor
+  -> distributed by AETRewardDistributor
 
-AethiItems
+AETItems
   -> minted with signed authorization
-  -> equipped in AethiGame
+  -> equipped in AETGame
   -> read during battle resolution
 
-AethiStaking
+AETStaking
   -> exposes stakedBalanceOf(account)
-  -> read by AethiGame when a player joins
+  -> read by AETGame when a player joins
 ```
 
 ## Roles
@@ -99,14 +99,14 @@ AethiStaking
 | Role | Contract | Capability |
 | --- | --- | --- |
 | `DEFAULT_ADMIN_ROLE` | all role-based contracts | Grants and revokes roles. |
-| `MINTER_ROLE` | `AethiToken` | Mints AETHI up to the cap. |
+| `MINTER_ROLE` | `AETToken` | Mints AET up to the cap. |
 | `PAUSER_ROLE` | token, items, staking, game, distributor | Pauses sensitive operations. |
-| `ITEM_SIGNER_ROLE` | `AethiItems` | Signs item mint authorizations. |
-| `METADATA_MANAGER_ROLE` | `AethiItems` | Updates item metadata URI. |
-| `REWARD_MANAGER_ROLE` | `AethiStaking` | Funds reward periods and configures staking parameters. |
-| `SEASON_MANAGER_ROLE` | `AethiGame` | Creates and finalizes seasons. |
-| `GAME_OPERATOR_ROLE` | `AethiGame` | Records player score. |
-| `DISTRIBUTOR_ROLE` | `AethiRewardDistributor` | Sends funded direct rewards. |
+| `ITEM_SIGNER_ROLE` | `AETItems` | Signs item mint authorizations. |
+| `METADATA_MANAGER_ROLE` | `AETItems` | Updates item metadata URI. |
+| `REWARD_MANAGER_ROLE` | `AETStaking` | Funds reward periods and configures staking parameters. |
+| `SEASON_MANAGER_ROLE` | `AETGame` | Creates and finalizes seasons. |
+| `GAME_OPERATOR_ROLE` | `AETGame` | Records player score. |
+| `DISTRIBUTOR_ROLE` | `AETRewardDistributor` | Sends funded direct rewards. |
 
 ## Invariants To Preserve
 

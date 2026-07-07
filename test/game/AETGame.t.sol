@@ -3,31 +3,31 @@ pragma solidity ^0.8.35;
 
 import {Test} from "forge-std/Test.sol";
 
-import {AethiGame} from "../../src/game/AethiGame.sol";
-import {AethiGameState} from "../../src/game/AethiGameState.sol";
-import {AethiGameTypes} from "../../src/game/AethiGameTypes.sol";
-import {AethiItems} from "../../src/items/AethiItems.sol";
-import {AethiStaking} from "../../src/staking/AethiStaking.sol";
-import {AethiToken} from "../../src/token/AethiToken.sol";
+import {AETGame} from "../../src/game/AETGame.sol";
+import {AETGameState} from "../../src/game/AETGameState.sol";
+import {AETGameTypes} from "../../src/game/AETGameTypes.sol";
+import {AETItems} from "../../src/items/AETItems.sol";
+import {AETStaking} from "../../src/staking/AETStaking.sol";
+import {AETToken} from "../../src/token/AETToken.sol";
 
-contract AethiGameTest is Test {
+contract AETGameTest is Test {
     uint256 internal adminKey = 0xA11CE;
     address internal admin = vm.addr(adminKey);
 
-    AethiToken internal token;
-    AethiItems internal items;
-    AethiStaking internal staking;
-    AethiGame internal game;
+    AETToken internal token;
+    AETItems internal items;
+    AETStaking internal staking;
+    AETGame internal game;
 
     address internal treasury = address(0xBEEF);
     address internal alice = address(0xA1);
     address internal bob = address(0xB0B);
 
     function setUp() public {
-        token = new AethiToken(admin, admin, 20_000 ether, 100_000 ether);
-        items = new AethiItems(admin);
-        staking = new AethiStaking(token, token, admin, 30 days, 1 days);
-        game = new AethiGame(token, staking, treasury, admin, 100 ether, 1 ether, 2_000, 100, 15 minutes, 7 days);
+        token = new AETToken(admin, admin, 20_000 ether, 100_000 ether);
+        items = new AETItems(admin);
+        staking = new AETStaking(token, token, admin, 30 days, 1 days);
+        game = new AETGame(token, staking, treasury, admin, 100 ether, 1 ether, 2_000, 100, 15 minutes, 7 days);
 
         vm.startPrank(admin);
         game.setItemCollection(items);
@@ -68,7 +68,7 @@ contract AethiGameTest is Test {
 
     function testBattleActionResolvesWithSignedResultAndConsumesItemCharge() public {
         uint256 itemId =
-            _mintItem(alice, 7, 2, uint8(AethiGameTypes.BattleAction.Strike), 2_000, 2, "ipfs://blade.json", 0);
+            _mintItem(alice, 7, 2, uint8(AETGameTypes.BattleAction.Strike), 2_000, 2, "ipfs://blade.json", 0);
         uint256 seasonId = _createSeason(500 ether);
 
         vm.warp(block.timestamp + 1);
@@ -76,15 +76,15 @@ contract AethiGameTest is Test {
         vm.startPrank(alice);
         game.joinSeason(seasonId);
         game.equipItem(seasonId, itemId);
-        game.commitBattleAction(seasonId, 1, AethiGameTypes.BattleAction.Strike);
+        game.commitBattleAction(seasonId, 1, AETGameTypes.BattleAction.Strike);
         vm.stopPrank();
 
-        AethiGameTypes.BattleResult memory result =
+        AETGameTypes.BattleResult memory result =
             _battleResult(seasonId, alice, 1, 100, true, block.timestamp + 1 hours);
         game.resolveBattle(result, _signBattle(result));
 
         assertEq(game.winStreaks(seasonId, alice), 1);
-        assertEq(uint256(game.pendingActions(seasonId, alice)), uint256(AethiGameTypes.BattleAction.None));
+        assertEq(uint256(game.pendingActions(seasonId, alice)), uint256(AETGameTypes.BattleAction.None));
         assertEq(items.itemCharges(itemId), 1);
         assertEq(game.scores(seasonId, alice), 170);
     }
@@ -99,11 +99,11 @@ contract AethiGameTest is Test {
         game.joinSeason(seasonId);
 
         vm.prank(alice);
-        game.commitBattleAction(seasonId, 1, AethiGameTypes.BattleAction.Guard);
+        game.commitBattleAction(seasonId, 1, AETGameTypes.BattleAction.Guard);
         vm.prank(bob);
-        game.commitBattleAction(seasonId, 1, AethiGameTypes.BattleAction.Focus);
+        game.commitBattleAction(seasonId, 1, AETGameTypes.BattleAction.Focus);
 
-        AethiGameTypes.BattleResult[] memory results = new AethiGameTypes.BattleResult[](2);
+        AETGameTypes.BattleResult[] memory results = new AETGameTypes.BattleResult[](2);
         bytes[] memory signatures = new bytes[](2);
         results[0] = _battleResult(seasonId, alice, 1, 100, true, block.timestamp + 1 hours);
         results[1] = _battleResult(seasonId, bob, 1, 100, false, block.timestamp + 1 hours);
@@ -122,13 +122,13 @@ contract AethiGameTest is Test {
 
         vm.startPrank(alice);
         game.joinSeason(seasonId);
-        game.commitBattleAction(seasonId, 1, AethiGameTypes.BattleAction.Strike);
+        game.commitBattleAction(seasonId, 1, AETGameTypes.BattleAction.Strike);
         vm.stopPrank();
 
         vm.warp(block.timestamp + 16 minutes);
         game.clearExpiredAction(seasonId, alice);
 
-        assertEq(uint256(game.pendingActions(seasonId, alice)), uint256(AethiGameTypes.BattleAction.None));
+        assertEq(uint256(game.pendingActions(seasonId, alice)), uint256(AETGameTypes.BattleAction.None));
     }
 
     function testResolvedBattleCannotBeReplayed() public {
@@ -137,32 +137,32 @@ contract AethiGameTest is Test {
 
         vm.startPrank(alice);
         game.joinSeason(seasonId);
-        game.commitBattleAction(seasonId, 1, AethiGameTypes.BattleAction.Strike);
+        game.commitBattleAction(seasonId, 1, AETGameTypes.BattleAction.Strike);
         vm.stopPrank();
 
-        AethiGameTypes.BattleResult memory result =
+        AETGameTypes.BattleResult memory result =
             _battleResult(seasonId, alice, 1, 100, true, block.timestamp + 1 hours);
         bytes memory signature = _signBattle(result);
 
         game.resolveBattle(result, signature);
 
         vm.prank(alice);
-        vm.expectRevert(AethiGameState.InvalidRound.selector);
-        game.commitBattleAction(seasonId, 1, AethiGameTypes.BattleAction.Strike);
+        vm.expectRevert(AETGameState.InvalidRound.selector);
+        game.commitBattleAction(seasonId, 1, AETGameTypes.BattleAction.Strike);
 
-        vm.expectRevert(AethiGameState.ResultAlreadyResolved.selector);
+        vm.expectRevert(AETGameState.ResultAlreadyResolved.selector);
         game.resolveBattle(result, signature);
     }
 
     function testCannotEquipItemWithoutCharges() public {
         uint256 itemId =
-            _mintItem(alice, 7, 2, uint8(AethiGameTypes.BattleAction.Strike), 2_000, 0, "ipfs://empty.json", 0);
+            _mintItem(alice, 7, 2, uint8(AETGameTypes.BattleAction.Strike), 2_000, 0, "ipfs://empty.json", 0);
         uint256 seasonId = _createSeason(500 ether);
         vm.warp(block.timestamp + 1);
 
         vm.startPrank(alice);
         game.joinSeason(seasonId);
-        vm.expectRevert(AethiGameState.NoItemCharges.selector);
+        vm.expectRevert(AETGameState.NoItemCharges.selector);
         game.equipItem(seasonId, itemId);
         vm.stopPrank();
     }
@@ -174,10 +174,10 @@ contract AethiGameTest is Test {
         vm.prank(alice);
         game.joinSeason(seasonId);
 
-        AethiGameTypes.BattleResult memory result =
+        AETGameTypes.BattleResult memory result =
             _battleResult(seasonId, alice, 1, 100, true, block.timestamp + 1 hours);
         bytes memory signature = _signBattle(result);
-        vm.expectRevert(AethiGameState.InvalidRound.selector);
+        vm.expectRevert(AETGameState.InvalidRound.selector);
         game.resolveBattle(result, signature);
     }
 
@@ -196,7 +196,7 @@ contract AethiGameTest is Test {
         vm.warp(block.timestamp + 1);
 
         vm.prank(admin);
-        vm.expectRevert(AethiGameState.SeasonActive.selector);
+        vm.expectRevert(AETGameState.SeasonActive.selector);
         game.cancelSeason(seasonId, treasury);
     }
 
@@ -231,7 +231,7 @@ contract AethiGameTest is Test {
 
     function testTransferredEquippedItemCannotBoostScore() public {
         uint256 itemId =
-            _mintItem(alice, 7, 2, uint8(AethiGameTypes.BattleAction.Strike), 2_000, 2, "ipfs://blade.json", 0);
+            _mintItem(alice, 7, 2, uint8(AETGameTypes.BattleAction.Strike), 2_000, 2, "ipfs://blade.json", 0);
         uint256 seasonId = _createSeason(500 ether);
 
         vm.warp(block.timestamp + 1);
@@ -243,7 +243,7 @@ contract AethiGameTest is Test {
         vm.stopPrank();
 
         vm.prank(admin);
-        vm.expectRevert(AethiGameState.InvalidItemOwner.selector);
+        vm.expectRevert(AETGameState.InvalidItemOwner.selector);
         game.recordScore(seasonId, alice, 100);
     }
 
@@ -257,7 +257,7 @@ contract AethiGameTest is Test {
 
         vm.startPrank(charlie);
         token.approve(address(game), 1 ether);
-        vm.expectRevert(AethiGameState.TooLittleStake.selector);
+        vm.expectRevert(AETGameState.TooLittleStake.selector);
         game.joinSeason(seasonId);
         vm.stopPrank();
     }
@@ -305,8 +305,8 @@ contract AethiGameTest is Test {
         uint256 baseScore,
         bool wonBattle,
         uint256 deadline
-    ) internal pure returns (AethiGameTypes.BattleResult memory) {
-        return AethiGameTypes.BattleResult({
+    ) internal pure returns (AETGameTypes.BattleResult memory) {
+        return AETGameTypes.BattleResult({
             seasonId: seasonId,
             player: player,
             round: round,
@@ -316,7 +316,7 @@ contract AethiGameTest is Test {
         });
     }
 
-    function _signBattle(AethiGameTypes.BattleResult memory result) internal view returns (bytes memory) {
+    function _signBattle(AETGameTypes.BattleResult memory result) internal view returns (bytes memory) {
         bytes32 digest = game.hashBattleResult(result);
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(adminKey, digest);
         return abi.encodePacked(r, s, v);

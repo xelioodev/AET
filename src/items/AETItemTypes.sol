@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.35;
 
-/// @title AethiItemTypes
-/// @notice Shared item schema constants for Aethi equipment NFTs.
-library AethiItemTypes {
+/// @title AETItemTypes
+/// @notice Shared item schema constants for AET equipment NFTs.
+library AETItemTypes {
     uint256 internal constant MAX_POWER_BPS = 5_000;
     uint256 internal constant MAX_CHARGES = 100;
 

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.35;
 
-/// @title IAethiItems
-/// @notice Minimal item NFT interface consumed by the Aethi game layer.
-interface IAethiItems {
+/// @title IAETItems
+/// @notice Minimal item NFT interface consumed by the AET game layer.
+interface IAETItems {
     /// @notice Returns the owner of an item NFT.
     /// @param tokenId Item token identifier.
     /// @return The item owner.

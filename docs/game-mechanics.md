@@ -1,6 +1,6 @@
 # Game Mechanics
 
-Aethi seasons are built around committed battle actions and signed match results.
+AET seasons are built around committed battle actions and signed match results.
 
 ## Season Entry
 

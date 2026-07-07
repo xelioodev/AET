@@ -1,6 +1,6 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">Aethi logo mark</title>
-  <desc id="desc">A minimal ae monogram for the Aethi protocol.</desc>
+  <title id="title">AET logo mark</title>
+  <desc id="desc">A minimal ae monogram for the AET protocol.</desc>
   <rect width="512" height="512" rx="96" fill="#0F1720"/>
   <path d="M128 352L232 160H280L384 352H327L306 311H205L184 352H128ZM229 264H282L256 212L229 264Z" fill="#F2B84B"/>
   <path d="M210 352V160H352V208H265V232H337V278H265V304H356V352H210Z" fill="#DDE7EC" fill-opacity="0.92"/>

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.35;
 
-/// @title AethiGameTypes
-/// @notice Shared data types for Aethi battle seasons.
-library AethiGameTypes {
+/// @title AETGameTypes
+/// @notice Shared data types for AET battle seasons.
+library AETGameTypes {
     enum BattleAction {
         None,
         Strike,

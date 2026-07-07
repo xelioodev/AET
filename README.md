@@ -1,37 +1,64 @@
 <p align="center">
-  <img src="docs/assets/aethi-banner.svg" alt="Aethi protocol banner" width="100%" />
+  <img src="docs/assets/aet-banner.svg" alt="AET protocol banner" width="100%" />
 </p>
 
 <p align="center">
   <a href="#"><img alt="Solidity" src="https://img.shields.io/badge/Solidity-0.8.35-363636?style=for-the-badge&logo=solidity" /></a>
   <a href="#"><img alt="OpenZeppelin" src="https://img.shields.io/badge/OpenZeppelin-v5.6.1-4e5ee4?style=for-the-badge" /></a>
+  <a href="https://basescan.org/address/0x000000000eAdb23d6d22585B9f50C3516028d262"><img alt="Base" src="https://img.shields.io/badge/Base-Mainnet-0052FF?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMiIgZmlsbD0iIzAwNTJGRiIvPjwvc3ZnPg==" /></a>
   <a href="#"><img alt="License" src="https://img.shields.io/badge/License-MIT-244e5d?style=for-the-badge" /></a>
 </p>
 
-# aethi
+```
+     █████╗ ███████╗████████╗
+    ██╔══██╗██╔════╝╚══██╔══╝
+    ███████║█████╗     ██║
+    ██╔══██║██╔══╝     ██║
+    ██║  ██║███████╗   ██║
+    ╚═╝  ╚═╝╚══════╝   ╚═╝
+    Seasonal Battle Protocol on Base
+```
 
-Aethi is a compact onchain game protocol for seasonal play.
+# AET
 
-Players stake AETHI, mint signed item NFTs, join live seasons, commit battle actions, earn resolved score, and claim rewards from season pools. The contracts keep token supply, item ownership, staking access, game state, and auxiliary rewards separated.
+AET is a compact onchain game protocol for seasonal play, deployed on **Base** (Chain ID `8453`).
+
+> **Official AET Token:** [`0x000000000eAdb23d6d22585B9f50C3516028d262`](https://basescan.org/address/0x000000000eAdb23d6d22585B9f50C3516028d262) on Base Network
+
+Players stake AET, mint signed item NFTs, join live seasons, commit battle actions, earn resolved score, and claim rewards from season pools. The contracts keep token supply, item ownership, staking access, game state, and auxiliary rewards separated.
 
 <p align="center">
-  <img src="docs/assets/protocol-map.svg" alt="Aethi protocol map" width="100%" />
+  <img src="docs/assets/protocol-map.svg" alt="AET protocol map" width="100%" />
 </p>
+
+## Official Deployment — Base Mainnet
+
+| Contract | Address |
+| --- | --- |
+| **AETToken** | [`0x000000000eAdb23d6d22585B9f50C3516028d262`](https://basescan.org/address/0x000000000eAdb23d6d22585B9f50C3516028d262) |
+| AETItems | TBD |
+| AETStaking | TBD |
+| AETGame | TBD |
+| AETRewardDistributor | TBD |
+
+> **Network:** Base Mainnet (Chain ID `8453`)
+> **Token Name:** AET | **Symbol:** AET
+> **Admin:** `0x000000000Bd34154377F01f1809dDa632c265e16`
 
 ## Protocol
 
 | Module | Contract | Purpose |
-| --- | --- |
-| Token | `AethiToken` | Capped ERC20 with permit, pausing, and role-gated minting. |
-| Items | `AethiItems` | ERC721 equipment with EIP-712 mint authorizations, classes, action affinity, and finite charges. |
-| Staking | `AethiStaking` | Single-token staking vault with reward periods, reward-per-share accounting, and unstake cooldown. |
-| Game | `AethiGame` | Season lifecycle, stake snapshots, battle action commits, signed result resolution, claims, cancellation, and dust sweep. |
-| Rewards | `AethiRewardDistributor` | Controlled vault for direct reward distributions outside season pools. |
+| --- | --- | --- |
+| Token | `AETToken` | Capped ERC20 with permit, pausing, and role-gated minting. |
+| Items | `AETItems` | ERC721 equipment with EIP-712 mint authorizations, classes, action affinity, and finite charges. |
+| Staking | `AETStaking` | Single-token staking vault with reward periods, reward-per-share accounting, and unstake cooldown. |
+| Game | `AETGame` | Season lifecycle, stake snapshots, battle action commits, signed result resolution, claims, cancellation, and dust sweep. |
+| Rewards | `AETRewardDistributor` | Controlled vault for direct reward distributions outside season pools. |
 
 ## Gameplay Loop
 
 ```text
-Acquire AETHI
+Acquire AET
     ↓
 Stake for access
     ↓
@@ -68,7 +95,7 @@ src/
   items/       Equipment NFTs
   rewards/     Direct reward vault
   staking/     Staking vault
-  token/       AETHI token
+  token/       AET token
 
 docs/
   architecture.md
@@ -80,7 +107,16 @@ docs/
 
 ## Deployment
 
-Set the variables in `.env.example`, then run the deployment script for the target network. The script deploys the five core contracts and connects `AethiItems` to `AethiGame`.
+Copy `.env.example` to `.env`, fill `PRIVATE_KEY`, `ETHERSCAN_API_KEY`, and role addresses, then deploy to Base mainnet:
+
+```bash
+source .env
+forge script script/DeployAET.s.sol:DeployAET --rpc-url base --chain 8453 --broadcast --verify --verifier etherscan --verifier-url "$ETHERSCAN_API_URL" --etherscan-api-key "$ETHERSCAN_API_KEY" -vvvv
+```
+
+The script deploys the five core contracts, connects `AETItems` to `AETGame`, grants the game item-consumer permissions, and hands protocol roles to `AET_ADMIN`.
+
+> **Note:** The AET token is deployed first to secure the vanity address `0x000000000eAdb23d6d22585B9f50C3516028d262`.
 
 ## Documentation
 
@@ -90,13 +126,18 @@ Set the variables in `.env.example`, then run the deployment script for the targ
 - [Operations](docs/operations.md)
 - [Threat model](docs/threat-model.md)
 - [Roadmap](docs/roadmap.md)
+- [Base Mainnet Deployment](docs/deployments/base-mainnet.md)
 
 ## Assets
 
-- [Logo mark](docs/assets/aethi-logo-mark.svg)
-- [Wordmark](docs/assets/aethi-wordmark.svg)
-- [Banner](docs/assets/aethi-banner.svg)
-- [Social preview](docs/assets/aethi-social-preview.svg)
+- [Logo mark](docs/assets/aet-logo-mark.svg)
+- [Wordmark](docs/assets/aet-wordmark.svg)
+- [Banner](docs/assets/aet-banner.svg)
+- [Social preview](docs/assets/aet-social-preview.svg)
+
+## Source Code
+
+- GitHub: [https://github.com/xelioodev/AET](https://github.com/xelioodev/AET)
 
 ## Status
 

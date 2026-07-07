@@ -7,13 +7,13 @@ import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-import {AethiGameTypes} from "./AethiGameTypes.sol";
-import {IAethiItems} from "../interfaces/IAethiItems.sol";
-import {IAethiStaking} from "../interfaces/IAethiStaking.sol";
+import {AETGameTypes} from "./AETGameTypes.sol";
+import {IAETItems} from "../interfaces/IAETItems.sol";
+import {IAETStaking} from "../interfaces/IAETStaking.sol";
 
-/// @title AethiGameState
-/// @notice Shared storage, events, and errors for the Aethi game coordinator.
-abstract contract AethiGameState is AccessControl, EIP712, Pausable, ReentrancyGuard {
+/// @title AETGameState
+/// @notice Shared storage, events, and errors for the AET game coordinator.
+abstract contract AETGameState is AccessControl, EIP712, Pausable, ReentrancyGuard {
     bytes32 public constant SEASON_MANAGER_ROLE = keccak256("SEASON_MANAGER_ROLE");
     bytes32 public constant GAME_OPERATOR_ROLE = keccak256("GAME_OPERATOR_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -26,8 +26,8 @@ abstract contract AethiGameState is AccessControl, EIP712, Pausable, ReentrancyG
     uint256 public constant MAX_BATCH_RESOLVE = 50;
 
     IERC20 public immutable token;
-    IAethiStaking public immutable staking;
-    IAethiItems public itemCollection;
+    IAETStaking public immutable staking;
+    IAETItems public itemCollection;
 
     address public treasury;
     uint256 public minStakeToPlay;
@@ -38,14 +38,14 @@ abstract contract AethiGameState is AccessControl, EIP712, Pausable, ReentrancyG
     uint256 public claimPeriod;
     uint256 public nextSeasonId = 1;
 
-    mapping(uint256 seasonId => AethiGameTypes.Season season) public seasons;
+    mapping(uint256 seasonId => AETGameTypes.Season season) public seasons;
     mapping(uint256 seasonId => mapping(address player => bool joined)) public hasJoined;
     mapping(uint256 seasonId => mapping(address player => uint256 stakeSnapshot)) public stakeSnapshots;
     mapping(uint256 seasonId => mapping(address player => uint256 score)) public scores;
     mapping(uint256 seasonId => mapping(address player => uint256 winStreak)) public winStreaks;
     mapping(uint256 seasonId => mapping(address player => bool claimed)) public hasClaimed;
     mapping(uint256 seasonId => mapping(address player => uint256 tokenId)) public equippedItems;
-    mapping(uint256 seasonId => mapping(address player => AethiGameTypes.BattleAction action)) public pendingActions;
+    mapping(uint256 seasonId => mapping(address player => AETGameTypes.BattleAction action)) public pendingActions;
     mapping(uint256 seasonId => mapping(address player => uint256 round)) public pendingActionRounds;
     mapping(uint256 seasonId => mapping(address player => uint256 deadline)) public pendingActionDeadlines;
     mapping(uint256 seasonId => mapping(address player => mapping(uint256 round => bool resolved))) public
@@ -63,7 +63,7 @@ abstract contract AethiGameState is AccessControl, EIP712, Pausable, ReentrancyG
         uint256 indexed seasonId,
         address indexed player,
         uint256 indexed round,
-        AethiGameTypes.BattleAction action,
+        AETGameTypes.BattleAction action,
         uint256 actionDeadline
     );
     event BattleActionExpired(uint256 indexed seasonId, address indexed player, uint256 indexed round);
@@ -71,7 +71,7 @@ abstract contract AethiGameState is AccessControl, EIP712, Pausable, ReentrancyG
         uint256 indexed seasonId,
         address indexed player,
         uint256 indexed round,
-        AethiGameTypes.BattleAction action,
+        AETGameTypes.BattleAction action,
         uint256 baseScore,
         uint256 boostedScore,
         uint256 streak
@@ -107,7 +107,7 @@ abstract contract AethiGameState is AccessControl, EIP712, Pausable, ReentrancyG
 
     constructor(
         IERC20 token_,
-        IAethiStaking staking_,
+        IAETStaking staking_,
         address treasury_,
         address admin,
         uint256 minStakeToPlay_,
@@ -116,7 +116,7 @@ abstract contract AethiGameState is AccessControl, EIP712, Pausable, ReentrancyG
         uint256 maxSeasonRound_,
         uint256 actionTimeout_,
         uint256 claimPeriod_
-    ) EIP712("AethiGame", "1") {
+    ) EIP712("AETGame", "1") {
         if (
             address(token_) == address(0) || address(staking_) == address(0) || treasury_ == address(0)
                 || admin == address(0)

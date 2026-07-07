@@ -4,7 +4,7 @@ The roadmap is ordered by protocol maturity rather than marketing milestones.
 
 ## Current
 
-- Capped AETHI token
+- Capped AET token
 - Signed item minting
 - Staking with reward periods and unstake cooldown
 - Season creation with escrowed reward pools

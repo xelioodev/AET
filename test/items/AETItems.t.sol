@@ -3,17 +3,17 @@ pragma solidity ^0.8.35;
 
 import {Test} from "forge-std/Test.sol";
 
-import {AethiItems} from "../../src/items/AethiItems.sol";
+import {AETItems} from "../../src/items/AETItems.sol";
 
-contract AethiItemsTest is Test {
+contract AETItemsTest is Test {
     uint256 internal signerKey = 0xA11CE;
     address internal admin = vm.addr(signerKey);
     address internal alice = address(0xA1);
 
-    AethiItems internal items;
+    AETItems internal items;
 
     function setUp() public {
-        items = new AethiItems(admin);
+        items = new AETItems(admin);
     }
 
     function testMintWithSignatureMintsItemAndConsumesNonce() public {
@@ -45,7 +45,7 @@ contract AethiItemsTest is Test {
         assertEq(items.itemCharges(tokenId), 0);
 
         vm.prank(admin);
-        vm.expectRevert(AethiItems.NoCharges.selector);
+        vm.expectRevert(AETItems.NoCharges.selector);
         items.consumeItemCharge(tokenId);
     }
 
@@ -63,7 +63,7 @@ contract AethiItemsTest is Test {
 
         vm.warp(block.timestamp + 1);
 
-        vm.expectRevert(AethiItems.AuthorizationExpired.selector);
+        vm.expectRevert(AETItems.AuthorizationExpired.selector);
         items.mintWithSignature(alice, 1, 1, 0, 500, 1, "ipfs://expired.json", 0, block.timestamp - 1, signature);
     }
 

@@ -3,20 +3,20 @@ pragma solidity ^0.8.35;
 
 import {Test} from "forge-std/Test.sol";
 
-import {AethiStaking} from "../../src/staking/AethiStaking.sol";
-import {AethiToken} from "../../src/token/AethiToken.sol";
+import {AETStaking} from "../../src/staking/AETStaking.sol";
+import {AETToken} from "../../src/token/AETToken.sol";
 
-contract AethiStakingTest is Test {
-    AethiToken internal token;
-    AethiStaking internal staking;
+contract AETStakingTest is Test {
+    AETToken internal token;
+    AETStaking internal staking;
 
     address internal admin = address(0xA11CE);
     address internal alice = address(0xA1);
     uint256 internal constant UNSTAKE_COOLDOWN = 1 days;
 
     function setUp() public {
-        token = new AethiToken(admin, admin, 10_000 ether, 100_000 ether);
-        staking = new AethiStaking(token, token, admin, 100 seconds, UNSTAKE_COOLDOWN);
+        token = new AETToken(admin, admin, 10_000 ether, 100_000 ether);
+        staking = new AETStaking(token, token, admin, 100 seconds, UNSTAKE_COOLDOWN);
 
         vm.startPrank(admin);
         assertTrue(token.transfer(alice, 1_000 ether));
@@ -46,7 +46,7 @@ contract AethiStakingTest is Test {
         token.approve(address(staking), 100 ether);
         staking.stake(100 ether);
         vm.expectRevert(
-            abi.encodeWithSelector(AethiStaking.PositionLocked.selector, block.timestamp + UNSTAKE_COOLDOWN)
+            abi.encodeWithSelector(AETStaking.PositionLocked.selector, block.timestamp + UNSTAKE_COOLDOWN)
         );
         staking.unstake(40 ether);
         vm.warp(block.timestamp + UNSTAKE_COOLDOWN);
@@ -66,7 +66,7 @@ contract AethiStakingTest is Test {
 
         uint256 availableAt = block.timestamp + UNSTAKE_COOLDOWN;
         assertEq(staking.unstakeAvailableAt(alice), availableAt);
-        vm.expectRevert(abi.encodeWithSelector(AethiStaking.PositionLocked.selector, availableAt));
+        vm.expectRevert(abi.encodeWithSelector(AETStaking.PositionLocked.selector, availableAt));
         staking.unstake(1 ether);
         vm.stopPrank();
     }

@@ -6,11 +6,11 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC20Pausable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-/// @title AethiToken
-/// @notice ERC20 token for the Aethi game economy.
+/// @title AETToken
+/// @notice ERC20 token for the AET game economy.
 /// @dev The token uses role-based minting and an immutable cap to avoid unbounded emissions.
-contract AethiToken is ERC20, ERC20Pausable, ERC20Permit, AccessControl {
-    /// @notice Role allowed to mint new AETHI up to the immutable cap.
+contract AETToken is ERC20, ERC20Pausable, ERC20Permit, AccessControl {
+    /// @notice Role allowed to mint new AET up to the immutable cap.
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     /// @notice Role allowed to pause and unpause token transfers.
@@ -30,8 +30,8 @@ contract AethiToken is ERC20, ERC20Pausable, ERC20Permit, AccessControl {
     /// @param initialSupply Amount minted during deployment.
     /// @param supplyCap Maximum token supply.
     constructor(address admin, address initialRecipient, uint256 initialSupply, uint256 supplyCap)
-        ERC20("Aethi", "AETHI")
-        ERC20Permit("Aethi")
+        ERC20("AET", "AET")
+        ERC20Permit("AET")
     {
         if (admin == address(0) || initialRecipient == address(0)) {
             revert ZeroAddress();
@@ -49,7 +49,7 @@ contract AethiToken is ERC20, ERC20Pausable, ERC20Permit, AccessControl {
         _mint(initialRecipient, initialSupply);
     }
 
-    /// @notice Mints AETHI to an account.
+    /// @notice Mints AET to an account.
     /// @param to Account receiving minted tokens.
     /// @param amount Amount of tokens to mint.
     function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {

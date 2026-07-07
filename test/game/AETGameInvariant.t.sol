@@ -3,28 +3,28 @@ pragma solidity ^0.8.35;
 
 import {Test} from "forge-std/Test.sol";
 
-import {AethiGame} from "../../src/game/AethiGame.sol";
-import {AethiGameTypes} from "../../src/game/AethiGameTypes.sol";
-import {AethiItems} from "../../src/items/AethiItems.sol";
-import {AethiStaking} from "../../src/staking/AethiStaking.sol";
-import {AethiToken} from "../../src/token/AethiToken.sol";
+import {AETGame} from "../../src/game/AETGame.sol";
+import {AETGameTypes} from "../../src/game/AETGameTypes.sol";
+import {AETItems} from "../../src/items/AETItems.sol";
+import {AETStaking} from "../../src/staking/AETStaking.sol";
+import {AETToken} from "../../src/token/AETToken.sol";
 
-contract AethiGameInvariantTest is Test {
+contract AETGameInvariantTest is Test {
     uint256 internal adminKey = 0xA11CE;
     address internal admin = vm.addr(adminKey);
     address internal treasury = address(0xBEEF);
     address internal alice = address(0xA1);
     address internal bob = address(0xB0B);
 
-    AethiToken internal token;
-    AethiStaking internal staking;
-    AethiGame internal game;
+    AETToken internal token;
+    AETStaking internal staking;
+    AETGame internal game;
 
     function setUp() public {
-        token = new AethiToken(admin, admin, 20_000 ether, 100_000 ether);
-        AethiItems items = new AethiItems(admin);
-        staking = new AethiStaking(token, token, admin, 30 days, 1 days);
-        game = new AethiGame(token, staking, treasury, admin, 100 ether, 1 ether, 2_000, 100, 15 minutes, 7 days);
+        token = new AETToken(admin, admin, 20_000 ether, 100_000 ether);
+        AETItems items = new AETItems(admin);
+        staking = new AETStaking(token, token, admin, 30 days, 1 days);
+        game = new AETGame(token, staking, treasury, admin, 100 ether, 1 ether, 2_000, 100, 15 minutes, 7 days);
 
         vm.startPrank(admin);
         game.setItemCollection(items);
@@ -84,9 +84,9 @@ contract AethiGameInvariantTest is Test {
 
     function _resolve(uint256 seasonId, address player, uint256 round, uint256 baseScore, bool wonBattle) internal {
         vm.prank(player);
-        game.commitBattleAction(seasonId, round, AethiGameTypes.BattleAction.Strike);
+        game.commitBattleAction(seasonId, round, AETGameTypes.BattleAction.Strike);
 
-        AethiGameTypes.BattleResult memory result = AethiGameTypes.BattleResult({
+        AETGameTypes.BattleResult memory result = AETGameTypes.BattleResult({
             seasonId: seasonId,
             player: player,
             round: round,

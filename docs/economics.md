@@ -4,7 +4,7 @@ The token economy is intentionally narrow.
 
 ## Token Uses
 
-AETHI is used for:
+AET is used for:
 
 - staking access
 - season entry fees
@@ -14,7 +14,7 @@ AETHI is used for:
 
 ## Supply
 
-`AethiToken` has an immutable cap. Minting is role-gated and cannot exceed that cap.
+`AETToken` has an immutable cap. Minting is role-gated and cannot exceed that cap.
 
 ## Season Pools
 

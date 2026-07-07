@@ -10,13 +10,13 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {Nonces} from "@openzeppelin/contracts/utils/Nonces.sol";
 
-import {AethiItemTypes} from "./AethiItemTypes.sol";
-import {IAethiItems} from "../interfaces/IAethiItems.sol";
+import {AETItemTypes} from "./AETItemTypes.sol";
+import {IAETItems} from "../interfaces/IAETItems.sol";
 
-/// @title AethiItems
-/// @notice ERC721 equipment collection for the Aethi game.
+/// @title AETItems
+/// @notice ERC721 equipment collection for the AET game.
 /// @dev Item minting is authorized with EIP-712 signatures, per-account nonces, and deadlines.
-contract AethiItems is IAethiItems, ERC721, ERC721Pausable, ERC721URIStorage, EIP712, Nonces, AccessControl {
+contract AETItems is IAETItems, ERC721, ERC721Pausable, ERC721URIStorage, EIP712, Nonces, AccessControl {
     /// @notice Role allowed to sign item mint authorizations.
     bytes32 public constant ITEM_SIGNER_ROLE = keccak256("ITEM_SIGNER_ROLE");
 
@@ -30,12 +30,12 @@ contract AethiItems is IAethiItems, ERC721, ERC721Pausable, ERC721URIStorage, EI
     bytes32 public constant ITEM_CONSUMER_ROLE = keccak256("ITEM_CONSUMER_ROLE");
 
     /// @notice Maximum allowed item score boost in basis points.
-    uint256 public constant MAX_POWER_BPS = AethiItemTypes.MAX_POWER_BPS;
+    uint256 public constant MAX_POWER_BPS = AETItemTypes.MAX_POWER_BPS;
 
     /// @notice Maximum charges assigned to a gameplay item.
-    uint256 public constant MAX_CHARGES = AethiItemTypes.MAX_CHARGES;
+    uint256 public constant MAX_CHARGES = AETItemTypes.MAX_CHARGES;
 
-    bytes32 public constant MINT_AUTHORIZATION_TYPEHASH = AethiItemTypes.MINT_AUTHORIZATION_TYPEHASH;
+    bytes32 public constant MINT_AUTHORIZATION_TYPEHASH = AETItemTypes.MINT_AUTHORIZATION_TYPEHASH;
 
     uint256 private _nextTokenId = 1;
     mapping(uint256 tokenId => uint256 powerBps) private _itemPower;
@@ -64,7 +64,7 @@ contract AethiItems is IAethiItems, ERC721, ERC721Pausable, ERC721URIStorage, EI
     error ZeroAddress();
 
     /// @param admin Account receiving admin, signer, pauser, and metadata manager roles.
-    constructor(address admin) ERC721("Aethi Items", "AITEM") EIP712("AethiItems", "1") {
+    constructor(address admin) ERC721("AET Items", "AITEM") EIP712("AETItems", "1") {
         if (admin == address(0)) {
             revert ZeroAddress();
         }
@@ -172,31 +172,31 @@ contract AethiItems is IAethiItems, ERC721, ERC721Pausable, ERC721URIStorage, EI
         return _hashTypedDataV4(structHash);
     }
 
-    /// @inheritdoc IAethiItems
+    /// @inheritdoc IAETItems
     function itemPower(uint256 tokenId) external view returns (uint256) {
         _requireOwned(tokenId);
         return _itemPower[tokenId];
     }
 
-    /// @inheritdoc IAethiItems
+    /// @inheritdoc IAETItems
     function itemClass(uint256 tokenId) external view returns (uint8) {
         _requireOwned(tokenId);
         return _itemClass[tokenId];
     }
 
-    /// @inheritdoc IAethiItems
+    /// @inheritdoc IAETItems
     function actionAffinity(uint256 tokenId) external view returns (uint8) {
         _requireOwned(tokenId);
         return _actionAffinity[tokenId];
     }
 
-    /// @inheritdoc IAethiItems
+    /// @inheritdoc IAETItems
     function itemCharges(uint256 tokenId) external view returns (uint256) {
         _requireOwned(tokenId);
         return _itemCharges[tokenId];
     }
 
-    /// @inheritdoc IAethiItems
+    /// @inheritdoc IAETItems
     function consumeItemCharge(uint256 tokenId) external onlyRole(ITEM_CONSUMER_ROLE) {
         _requireOwned(tokenId);
         uint256 charges = _itemCharges[tokenId];
@@ -211,8 +211,8 @@ contract AethiItems is IAethiItems, ERC721, ERC721Pausable, ERC721URIStorage, EI
         emit ItemChargeConsumed(tokenId, charges - 1);
     }
 
-    /// @inheritdoc IAethiItems
-    function ownerOf(uint256 tokenId) public view override(IAethiItems, IERC721, ERC721) returns (address) {
+    /// @inheritdoc IAETItems
+    function ownerOf(uint256 tokenId) public view override(IAETItems, IERC721, ERC721) returns (address) {
         return super.ownerOf(tokenId);
     }
 

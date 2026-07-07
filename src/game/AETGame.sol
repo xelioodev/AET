@@ -5,21 +5,21 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-import {AethiGameAdmin} from "./AethiGameAdmin.sol";
-import {AethiBattleMath} from "./AethiBattleMath.sol";
-import {AethiGameState} from "./AethiGameState.sol";
-import {AethiGameTypes} from "./AethiGameTypes.sol";
-import {IAethiStaking} from "../interfaces/IAethiStaking.sol";
+import {AETGameAdmin} from "./AETGameAdmin.sol";
+import {AETBattleMath} from "./AETBattleMath.sol";
+import {AETGameState} from "./AETGameState.sol";
+import {AETGameTypes} from "./AETGameTypes.sol";
+import {IAETStaking} from "../interfaces/IAETStaking.sol";
 
-/// @title AethiGame
+/// @title AETGame
 /// @notice Season coordinator for stake-gated battle rounds and reward pools.
 /// @dev Match outcomes are signed attestations; the contract does not derive randomness from block values.
-contract AethiGame is AethiGameAdmin {
+contract AETGame is AETGameAdmin {
     using SafeERC20 for IERC20;
 
     constructor(
         IERC20 token_,
-        IAethiStaking staking_,
+        IAETStaking staking_,
         address treasury_,
         address admin,
         uint256 minStakeToPlay_,
@@ -29,7 +29,7 @@ contract AethiGame is AethiGameAdmin {
         uint256 actionTimeout_,
         uint256 claimPeriod_
     )
-        AethiGameState(
+        AETGameState(
             token_,
             staking_,
             treasury_,
@@ -55,7 +55,7 @@ contract AethiGame is AethiGameAdmin {
 
         uint256 seasonClaimDeadline = uint256(endTime) + claimPeriod;
         seasonId = nextSeasonId++;
-        seasons[seasonId] = AethiGameTypes.Season({
+        seasons[seasonId] = AETGameTypes.Season({
             startTime: startTime,
             endTime: endTime,
             rewardPool: rewardPool,
@@ -79,7 +79,7 @@ contract AethiGame is AethiGameAdmin {
     }
 
     function cancelSeason(uint256 seasonId, address recipient) external nonReentrant onlyRole(SEASON_MANAGER_ROLE) {
-        AethiGameTypes.Season storage season = seasons[seasonId];
+        AETGameTypes.Season storage season = seasons[seasonId];
         if (recipient == address(0)) {
             revert ZeroAddress();
         }
@@ -99,7 +99,7 @@ contract AethiGame is AethiGameAdmin {
     }
 
     function joinSeason(uint256 seasonId) external nonReentrant whenNotPaused {
-        AethiGameTypes.Season memory season = seasons[seasonId];
+        AETGameTypes.Season memory season = seasons[seasonId];
         if (!_isActive(season)) {
             revert SeasonClosed();
         }
@@ -124,7 +124,7 @@ contract AethiGame is AethiGameAdmin {
     }
 
     function equipItem(uint256 seasonId, uint256 tokenId) external whenNotPaused {
-        AethiGameTypes.Season memory season = seasons[seasonId];
+        AETGameTypes.Season memory season = seasons[seasonId];
         if (!_isActive(season)) {
             revert SeasonClosed();
         }
@@ -147,11 +147,11 @@ contract AethiGame is AethiGameAdmin {
         emit ItemEquipped(seasonId, msg.sender, tokenId, powerBps);
     }
 
-    function commitBattleAction(uint256 seasonId, uint256 round, AethiGameTypes.BattleAction action)
+    function commitBattleAction(uint256 seasonId, uint256 round, AETGameTypes.BattleAction action)
         external
         whenNotPaused
     {
-        AethiGameTypes.Season memory season = seasons[seasonId];
+        AETGameTypes.Season memory season = seasons[seasonId];
         if (!_isActive(season)) {
             revert SeasonClosed();
         }
@@ -164,11 +164,11 @@ contract AethiGame is AethiGameAdmin {
         if (round <= pendingActionRounds[seasonId][msg.sender]) {
             revert InvalidRound();
         }
-        if (action == AethiGameTypes.BattleAction.None) {
+        if (action == AETGameTypes.BattleAction.None) {
             revert InvalidAction();
         }
         if (
-            pendingActions[seasonId][msg.sender] != AethiGameTypes.BattleAction.None
+            pendingActions[seasonId][msg.sender] != AETGameTypes.BattleAction.None
                 && block.timestamp <= pendingActionDeadlines[seasonId][msg.sender]
         ) {
             revert PendingAction();
@@ -183,8 +183,8 @@ contract AethiGame is AethiGameAdmin {
     }
 
     function clearExpiredAction(uint256 seasonId, address player) external {
-        AethiGameTypes.BattleAction action = pendingActions[seasonId][player];
-        if (action == AethiGameTypes.BattleAction.None) {
+        AETGameTypes.BattleAction action = pendingActions[seasonId][player];
+        if (action == AETGameTypes.BattleAction.None) {
             revert NoPendingAction();
         }
         if (block.timestamp <= pendingActionDeadlines[seasonId][player]) {
@@ -198,14 +198,14 @@ contract AethiGame is AethiGameAdmin {
         emit BattleActionExpired(seasonId, player, round);
     }
 
-    function resolveBattle(AethiGameTypes.BattleResult calldata result, bytes calldata signature)
+    function resolveBattle(AETGameTypes.BattleResult calldata result, bytes calldata signature)
         external
         whenNotPaused
     {
         _resolveBattle(result, signature);
     }
 
-    function resolveBattles(AethiGameTypes.BattleResult[] calldata results, bytes[] calldata signatures)
+    function resolveBattles(AETGameTypes.BattleResult[] calldata results, bytes[] calldata signatures)
         external
         whenNotPaused
     {
@@ -223,7 +223,7 @@ contract AethiGame is AethiGameAdmin {
         whenNotPaused
         onlyRole(GAME_OPERATOR_ROLE)
     {
-        AethiGameTypes.Season storage season = seasons[seasonId];
+        AETGameTypes.Season storage season = seasons[seasonId];
         if (!_isActive(season)) {
             revert SeasonClosed();
         }
@@ -245,7 +245,7 @@ contract AethiGame is AethiGameAdmin {
     }
 
     function finalizeSeason(uint256 seasonId) external onlyRole(SEASON_MANAGER_ROLE) {
-        AethiGameTypes.Season storage season = seasons[seasonId];
+        AETGameTypes.Season storage season = seasons[seasonId];
         if (season.endTime == 0) {
             revert InvalidSeason();
         }
@@ -264,7 +264,7 @@ contract AethiGame is AethiGameAdmin {
     }
 
     function claimSeasonReward(uint256 seasonId) external nonReentrant returns (uint256 reward) {
-        AethiGameTypes.Season storage season = seasons[seasonId];
+        AETGameTypes.Season storage season = seasons[seasonId];
         if (!season.finalized) {
             revert SeasonNotFinalized();
         }
@@ -290,7 +290,7 @@ contract AethiGame is AethiGameAdmin {
     }
 
     function sweepSeasonDust(uint256 seasonId, address recipient) external nonReentrant onlyRole(SEASON_MANAGER_ROLE) {
-        AethiGameTypes.Season storage season = seasons[seasonId];
+        AETGameTypes.Season storage season = seasons[seasonId];
         if (recipient == address(0)) {
             revert ZeroAddress();
         }
@@ -312,7 +312,7 @@ contract AethiGame is AethiGameAdmin {
         emit SeasonDustSwept(seasonId, recipient, dust);
     }
 
-    function hashBattleResult(AethiGameTypes.BattleResult memory result) public view returns (bytes32) {
+    function hashBattleResult(AETGameTypes.BattleResult memory result) public view returns (bytes32) {
         return _hashTypedDataV4(
             keccak256(
                 abi.encode(
@@ -328,7 +328,7 @@ contract AethiGame is AethiGameAdmin {
         );
     }
 
-    function _resolveBattle(AethiGameTypes.BattleResult calldata result, bytes calldata signature) internal {
+    function _resolveBattle(AETGameTypes.BattleResult calldata result, bytes calldata signature) internal {
         if (block.timestamp > result.deadline) {
             revert InvalidAttestation();
         }
@@ -337,7 +337,7 @@ contract AethiGame is AethiGameAdmin {
             revert InvalidAttestation();
         }
 
-        AethiGameTypes.Season memory season = seasons[result.seasonId];
+        AETGameTypes.Season memory season = seasons[result.seasonId];
         if (!_isActive(season)) {
             revert SeasonClosed();
         }
@@ -360,8 +360,8 @@ contract AethiGame is AethiGameAdmin {
             revert ActionExpired();
         }
 
-        AethiGameTypes.BattleAction action = pendingActions[result.seasonId][result.player];
-        if (action == AethiGameTypes.BattleAction.None) {
+        AETGameTypes.BattleAction action = pendingActions[result.seasonId][result.player];
+        if (action == AETGameTypes.BattleAction.None) {
             revert NoPendingAction();
         }
 
@@ -371,13 +371,13 @@ contract AethiGame is AethiGameAdmin {
         _applyBattleResult(result, action);
     }
 
-    function _applyBattleResult(AethiGameTypes.BattleResult calldata result, AethiGameTypes.BattleAction action)
+    function _applyBattleResult(AETGameTypes.BattleResult calldata result, AETGameTypes.BattleAction action)
         internal
     {
         uint256 streak = result.wonBattle ? winStreaks[result.seasonId][result.player] + 1 : 0;
         winStreaks[result.seasonId][result.player] = streak;
 
-        uint256 actionScore = AethiBattleMath.battleScore(result.baseScore, uint8(action), result.wonBattle, streak);
+        uint256 actionScore = AETBattleMath.battleScore(result.baseScore, uint8(action), result.wonBattle, streak);
         uint256 boostedScore = _scoreWithBattleBoosts(result.seasonId, result.player, actionScore, action);
         scores[result.seasonId][result.player] += boostedScore;
         seasons[result.seasonId].totalScore += boostedScore;
@@ -400,14 +400,14 @@ contract AethiGame is AethiGameAdmin {
             boostBps += itemCollection.itemPower(tokenId);
         }
 
-        return AethiBattleMath.applyBoost(baseScore, boostBps);
+        return AETBattleMath.applyBoost(baseScore, boostBps);
     }
 
     function _scoreWithBattleBoosts(
         uint256 seasonId,
         address player,
         uint256 baseScore,
-        AethiGameTypes.BattleAction action
+        AETGameTypes.BattleAction action
     ) internal returns (uint256) {
         uint256 tokenId = equippedItems[seasonId][player];
         uint256 boostBps = _stakeBoostBps(seasonId, player);
@@ -423,11 +423,11 @@ contract AethiGame is AethiGameAdmin {
             }
         }
 
-        return AethiBattleMath.applyBoost(baseScore, boostBps);
+        return AETBattleMath.applyBoost(baseScore, boostBps);
     }
 
     function _stakeBoostBps(uint256 seasonId, address player) internal view returns (uint256) {
-        AethiGameTypes.Season memory season = seasons[seasonId];
+        AETGameTypes.Season memory season = seasons[seasonId];
         uint256 minimum = season.minStakeToPlay;
         if (minimum == 0) {
             return 0;
@@ -438,10 +438,10 @@ contract AethiGame is AethiGameAdmin {
             return 0;
         }
 
-        return AethiBattleMath.stakeBoostBps(stakeSnapshot, minimum, season.stakeBoostCapBps);
+        return AETBattleMath.stakeBoostBps(stakeSnapshot, minimum, season.stakeBoostCapBps);
     }
 
-    function _isActive(AethiGameTypes.Season memory season) internal view returns (bool) {
+    function _isActive(AETGameTypes.Season memory season) internal view returns (bool) {
         return season.startTime <= block.timestamp && block.timestamp < season.endTime && !season.finalized
             && !season.cancelled;
     }

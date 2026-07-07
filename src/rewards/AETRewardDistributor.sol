@@ -7,9 +7,9 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-/// @title AethiRewardDistributor
-/// @notice Custodial reward vault for controlled AETHI distributions.
-contract AethiRewardDistributor is AccessControl, Pausable, ReentrancyGuard {
+/// @title AETRewardDistributor
+/// @notice Custodial reward vault for controlled AET distributions.
+contract AETRewardDistributor is AccessControl, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     /// @notice Role allowed to distribute funded rewards.

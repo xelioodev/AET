@@ -3,19 +3,19 @@ pragma solidity ^0.8.35;
 
 import {Test} from "forge-std/Test.sol";
 
-import {AethiRewardDistributor} from "../../src/rewards/AethiRewardDistributor.sol";
-import {AethiToken} from "../../src/token/AethiToken.sol";
+import {AETRewardDistributor} from "../../src/rewards/AETRewardDistributor.sol";
+import {AETToken} from "../../src/token/AETToken.sol";
 
-contract AethiRewardDistributorTest is Test {
-    AethiToken internal token;
-    AethiRewardDistributor internal distributor;
+contract AETRewardDistributorTest is Test {
+    AETToken internal token;
+    AETRewardDistributor internal distributor;
 
     address internal admin = address(0xA11CE);
     address internal alice = address(0xA1);
 
     function setUp() public {
-        token = new AethiToken(admin, admin, 1_000 ether, 10_000 ether);
-        distributor = new AethiRewardDistributor(token, admin);
+        token = new AETToken(admin, admin, 1_000 ether, 10_000 ether);
+        distributor = new AETRewardDistributor(token, admin);
 
         vm.startPrank(admin);
         token.approve(address(distributor), 100 ether);

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.35;
 
-/// @title AethiBattleMath
-/// @notice Pure scoring helpers for Aethi battle seasons.
-library AethiBattleMath {
+/// @title AETBattleMath
+/// @notice Pure scoring helpers for AET battle seasons.
+library AETBattleMath {
     error InvalidAction();
 
     function battleScore(uint256 baseScore, uint8 action, bool wonBattle, uint256 streak)

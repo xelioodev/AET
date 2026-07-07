@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.35;
 
-import {AethiGameState} from "./AethiGameState.sol";
-import {IAethiItems} from "../interfaces/IAethiItems.sol";
+import {AETGameState} from "./AETGameState.sol";
+import {IAETItems} from "../interfaces/IAETItems.sol";
 
-/// @title AethiGameAdmin
-/// @notice Admin controls for Aethi game configuration and emergency pause.
-abstract contract AethiGameAdmin is AethiGameState {
+/// @title AETGameAdmin
+/// @notice Admin controls for AET game configuration and emergency pause.
+abstract contract AETGameAdmin is AETGameState {
     function setGameConfig(
         address treasury_,
         uint256 minStakeToPlay_,
@@ -32,7 +32,7 @@ abstract contract AethiGameAdmin is AethiGameState {
         emit GameConfigUpdated(treasury_, minStakeToPlay_, entryFee_, stakeBoostCapBps_);
     }
 
-    function setItemCollection(IAethiItems itemCollection_) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setItemCollection(IAETItems itemCollection_) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (address(itemCollection_) == address(0)) {
             revert ZeroAddress();
         }

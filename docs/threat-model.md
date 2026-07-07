@@ -1,13 +1,13 @@
-# Aethi Threat Model
+# AET Threat Model
 
-This document describes the main risks and trust assumptions for the Aethi smart contract system.
+This document describes the main risks and trust assumptions for the AET smart contract system.
 
 ## Scope
 
 In scope:
 
-- AETHI ERC20 token
-- Aethi item NFTs
+- AET ERC20 token
+- AET item NFTs
 - staking vault
 - season gameplay
 - reward distributor
@@ -25,7 +25,7 @@ Out of scope:
 
 ## Protected Assets
 
-- AETHI token supply
+- AET token supply
 - user staked principal
 - funded staking rewards
 - escrowed season reward pools
@@ -36,7 +36,7 @@ Out of scope:
 
 ## Trust Assumptions
 
-Aethi uses explicit privileged roles. These roles should be assigned carefully, ideally to multisigs or dedicated operational signers.
+AET uses explicit privileged roles. These roles should be assigned carefully, ideally to multisigs or dedicated operational signers.
 
 | Actor | Trust Required |
 | --- | --- |

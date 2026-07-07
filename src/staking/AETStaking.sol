@@ -7,12 +7,12 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-import {IAethiStaking} from "../interfaces/IAethiStaking.sol";
+import {IAETStaking} from "../interfaces/IAETStaking.sol";
 
-/// @title AethiStaking
-/// @notice Single-token staking vault for AETHI rewards.
+/// @title AETStaking
+/// @notice Single-token staking vault for AET rewards.
 /// @dev Reward accounting uses accumulated rewards per share and never loops through stakers.
-contract AethiStaking is IAethiStaking, AccessControl, Pausable, ReentrancyGuard {
+contract AETStaking is IAETStaking, AccessControl, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     /// @notice Role allowed to configure and fund reward emissions.
@@ -255,7 +255,7 @@ contract AethiStaking is IAethiStaking, AccessControl, Pausable, ReentrancyGuard
         _unpause();
     }
 
-    /// @inheritdoc IAethiStaking
+    /// @inheritdoc IAETStaking
     function stakedBalanceOf(address account) external view returns (uint256) {
         return _users[account].amount;
     }
